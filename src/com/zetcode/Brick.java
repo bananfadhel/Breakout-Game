@@ -2,39 +2,57 @@ package com.zetcode;
 
 import javax.swing.ImageIcon;
 
+/**
+ * A normal brick: disappears after one hit.
+ *
+ * Refactoring (Stage 1 - Factory Method): Brick is now the base "Product"
+ * type. Instead of a single destroyed flag it keeps the number of hits
+ * left, so subclasses such as StrongBrick can need more than one hit.
+ * Bricks are no longer created directly by Board; they are created by a
+ * BrickFactory.
+ */
 public class Brick extends Sprite {
 
-    private boolean destroyed;
+    protected int hitsLeft;
 
     public Brick(int x, int y) {
-        
-        initBrick(x, y);
+
+        this(x, y, 1);
     }
-    
-    private void initBrick(int x, int y) {
-        
+
+    protected Brick(int x, int y, int hits) {
+
         this.x = x;
         this.y = y;
-        
-        destroyed = false;
+        this.hitsLeft = hits;
 
-        loadImage();
+        loadImage(getImagePath());
         getImageDimensions();
     }
-    
-    private void loadImage() {
-        
-        var ii = new ImageIcon("src/resources/brick.png");
-        image = ii.getImage();        
+
+    /** Subclasses override this to use a different picture. */
+    protected String getImagePath() {
+
+        return "src/resources/brick.png";
+    }
+
+    protected void loadImage(String path) {
+
+        var ii = new ImageIcon(path);
+        image = ii.getImage();
     }
 
     boolean isDestroyed() {
-        
-        return destroyed;
+
+        return hitsLeft <= 0;
     }
 
-    void setDestroyed(boolean val) {
-        
-        destroyed = val;
+    /** Called by Board when the ball hits this brick. */
+    void hit() {
+
+        if (hitsLeft > 0) {
+
+            hitsLeft--;
+        }
     }
 }

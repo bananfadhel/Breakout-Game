@@ -41,23 +41,23 @@ public class Board extends JPanel {
 
     private void gameInit() {
 
-        bricks = new Brick[Commons.N_OF_BRICKS];
-
         ball = new Ball();
         paddle = new Paddle();
 
-        int k = 0;
+        // Stage 1 - Builder: the level is built by LevelEngineer (director)
+        // using a LevelBuilder, like RobotEngineer and RobotBuilder in the lecture.
+        // Stage 1 - Factory Method: the builder receives the BrickFactory
+        // (concrete creator) to use for every brick.
+        // To play the hard level, change this line to:
+        //     new HardLevelBuilder(new ClassicBrickFactory());
+        LevelBuilder builder = new ClassicLevelBuilder(new ClassicBrickFactory());
+        LevelEngineer engineer = new LevelEngineer(builder);
+        engineer.makeLevel();
+        Level level = engineer.getLevel();
 
-        for (int i = 0; i < 5; i++) {
+        bricks = level.getBricks();
 
-            for (int j = 0; j < 6; j++) {
-
-                bricks[k] = new Brick(j * 40 + 30, i * 10 + 50);
-                k++;
-            }
-        }
-
-        timer = new Timer(Commons.PERIOD, new GameCycle());
+        timer = new Timer(level.getSpeed(), new GameCycle());
         timer.start();
     }
 
@@ -91,7 +91,7 @@ public class Board extends JPanel {
         g2d.drawImage(paddle.getImage(), paddle.getX(), paddle.getY(),
                 paddle.getImageWidth(), paddle.getImageHeight(), this);
 
-        for (int i = 0; i < Commons.N_OF_BRICKS; i++) {
+        for (int i = 0; i < bricks.length; i++) {
 
             if (!bricks[i].isDestroyed()) {
 
@@ -159,14 +159,14 @@ public class Board extends JPanel {
             stopGame();
         }
 
-        for (int i = 0, j = 0; i < Commons.N_OF_BRICKS; i++) {
+        for (int i = 0, j = 0; i < bricks.length; i++) {
 
             if (bricks[i].isDestroyed()) {
 
                 j++;
             }
 
-            if (j == Commons.N_OF_BRICKS) {
+            if (j == bricks.length) {
 
                 message = "Victory";
                 stopGame();
@@ -214,7 +214,7 @@ public class Board extends JPanel {
             }
         }
 
-        for (int i = 0; i < Commons.N_OF_BRICKS; i++) {
+        for (int i = 0; i < bricks.length; i++) {
 
             if ((ball.getRect()).intersects(bricks[i].getRect())) {
 
@@ -246,7 +246,7 @@ public class Board extends JPanel {
                         ball.setYDir(-1);
                     }
 
-                    bricks[i].setDestroyed(true);
+                    bricks[i].hit();
                 }
             }
         }
