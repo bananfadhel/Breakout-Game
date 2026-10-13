@@ -15,6 +15,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Board extends JPanel {
 
@@ -23,6 +25,7 @@ public class Board extends JPanel {
     private Ball ball;
     private Paddle paddle;
     private Brick[] bricks;
+    private Set<Brick> touchedBricks = new HashSet<>();  // bricks the ball touched in the last frame
     private boolean inGame = true;
 
     public Board() {
@@ -214,9 +217,15 @@ public class Board extends JPanel {
             }
         }
 
+        // A brick counts a hit only when the ball first touches it, so a
+        // StrongBrick loses one hit per collision (not one hit per frame).
+        Set<Brick> nowTouching = new HashSet<>();
+
         for (int i = 0; i < bricks.length; i++) {
 
             if ((ball.getRect()).intersects(bricks[i].getRect())) {
+
+                nowTouching.add(bricks[i]);
 
                 int ballLeft = (int) ball.getRect().getMinX();
                 int ballHeight = (int) ball.getRect().getHeight();
@@ -228,7 +237,7 @@ public class Board extends JPanel {
                 var pointTop = new Point(ballLeft, ballTop - 1);
                 var pointBottom = new Point(ballLeft, ballTop + ballHeight + 1);
 
-                if (!bricks[i].isDestroyed()) {
+                if (!bricks[i].isDestroyed() && !touchedBricks.contains(bricks[i])) {
 
                     if (bricks[i].getRect().contains(pointRight)) {
 
@@ -250,5 +259,7 @@ public class Board extends JPanel {
                 }
             }
         }
+
+        touchedBricks = nowTouching;
     }
 }

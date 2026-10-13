@@ -13,7 +13,7 @@ public class HardLevelBuilder implements LevelBuilder {
 
     /**
      * The brick factory is passed in (not created here), so the same level
-     * layout can be built with any family of bricks (any BrickFactory subclass).
+     * layout can be built with any BrickFactory subclass.
      */
     public HardLevelBuilder(BrickFactory brickFactory) {
         this.brickFactory = brickFactory;
