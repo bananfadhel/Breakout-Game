@@ -1,64 +1,56 @@
-# Java Breakout Game – CCSW 413 Software Design Patterns Project
+# Breakout Game – CCSW 413 Design Patterns Project
 
-Course project for **CCSW 413 Software Design Patterns** (University of Jeddah, First Semester 2025/2026).
-We refactor an existing open-source Java Swing game by applying design patterns in three stages.
+This is our group project for **CCSW 413 Software Design Patterns** at the University of Jeddah.
+We took an open-source Java Breakout game and we're refactoring it using design patterns, two from each category (Creational, Structural, Behavioral), one stage at a time.
 
-Original code: [janbodnar/Java-Breakout-Game](https://github.com/janbodnar/Java-Breakout-Game) by Jan Bodnar
-(http://zetcode.com/javagames/breakout/), available under the 2-Clause BSD License.
+Original game by Jan Bodnar: https://github.com/janbodnar/Java-Breakout-Game (BSD 2-Clause License)
 
 ![Breakout game screenshot](breakout_game.png)
 
-## Project stages
+## Team
+- Banan Fadhel
+- Enas Alqarni
+- Dana Alshahrani
+- Jana Akkad
+- Joury Ghorab
 
-| Stage | Category | Patterns | Status |
-| --- | --- | --- | --- |
-| 1 | Creational | Factory Method, Builder | Done |
-| 2 | Structural | – | Coming soon |
-| 3 | Behavioral | – | Coming soon |
+## Progress
+- [x] Stage 1 – Creational: Factory Method + Builder
+- [ ] Stage 2 – Structural
+- [ ] Stage 3 – Behavioral
 
-## Stage 1 – Creational patterns
+## Stage 1 – What we did
 
-### Factory Method (brick creation)
-`Board` no longer calls `new Brick(x, y)`. Bricks are created through the abstract creator
-`BrickFactory.createBrick(type, x, y)`, and the concrete creator `ClassicBrickFactory` decides
-which class to instantiate: `'N'` → `Brick` (one hit), `'S'` → `StrongBrick` (two hits, cracked image after the first).
+### Factory Method (creating bricks)
+Before, `Board` created every brick directly with `new Brick(x, y)`.
+Now bricks are created through `BrickFactory`, and `ClassicBrickFactory` decides which brick to make:
+- `'N'` → normal `Brick` (breaks in 1 hit)
+- `'S'` → `StrongBrick` (needs 2 hits, cracks after the first one)
 
-| Role | Class |
-| --- | --- |
-| Product | `Brick` |
-| Concrete Product | `Brick`, `StrongBrick` |
-| Creator | `BrickFactory` (abstract) |
-| Concrete Creator | `ClassicBrickFactory` |
+### Builder (building levels)
+Before, the whole level was hard-coded inside `Board.gameInit()`.
+Now we followed the Robot example from the lecture:
+- `Level` is the product (bricks + speed)
+- `LevelBuilder` is the builder interface
+- `ClassicLevelBuilder` and `HardLevelBuilder` build two different levels
+- `LevelEngineer` is the director that calls the building steps
+- `Board` just asks for the finished level
 
-### Builder (level construction)
-The level is no longer hard-coded inside `Board.gameInit()`. It follows the Robot example from the lecture:
-the director `LevelEngineer` calls the building steps (`buildBricks()`, `buildSpeed()`) on a `LevelBuilder`,
-and `Board` takes the finished `Level`.
+The two patterns work together: each builder gets a `BrickFactory` and uses it to create the bricks.
 
-| Role | Class |
-| --- | --- |
-| Product | `Level` |
-| Builder | `LevelBuilder` (interface) |
-| Concrete Builder | `ClassicLevelBuilder`, `HardLevelBuilder` |
-| Director | `LevelEngineer` |
-| Client | `Board` |
-
-The two patterns work together: each level builder receives a `BrickFactory` and creates every brick through it.
-
+To try the hard level, change this line in `Board.gameInit()`:
 ```java
-LevelBuilder builder = new ClassicLevelBuilder(new ClassicBrickFactory());
-LevelEngineer engineer = new LevelEngineer(builder);
-engineer.makeLevel();
-Level level = engineer.getLevel();
+new ClassicLevelBuilder(new ClassicBrickFactory())
+```
+to:
+```java
+new HardLevelBuilder(new ClassicBrickFactory())
 ```
 
-To play the hard level, change the builder in `Board.gameInit()` to `new HardLevelBuilder(new ClassicBrickFactory())`.
-
 ## How to run
-
-Run from the project root (images are loaded from `src/resources/`):
-
+Run these from the project folder:
 ```bash
 javac -d out src/com/zetcode/*.java
 java -cp out com.zetcode.Breakout
 ```
+Use the left and right arrow keys to move the paddle.
