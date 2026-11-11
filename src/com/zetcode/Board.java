@@ -8,15 +8,12 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Board extends JPanel {
 
@@ -24,8 +21,7 @@ public class Board extends JPanel {
     private String message = "Game Over";
     private Ball ball;
     private Paddle paddle;
-    private Brick[] bricks;
-    private Set<Brick> touchedBricks = new HashSet<>();  // bricks the ball touched in the last frame
+    private BrickComponent wall;   // Stage 2 - Composite: the whole wall is one component
     private boolean inGame = true;
 
     public Board() {
@@ -58,7 +54,7 @@ public class Board extends JPanel {
         engineer.makeLevel();
         Level level = engineer.getLevel();
 
-        bricks = level.getBricks();
+        wall = level.getWall();
 
         timer = new Timer(level.getSpeed(), new GameCycle());
         timer.start();
@@ -89,20 +85,11 @@ public class Board extends JPanel {
 
     private void drawObjects(Graphics2D g2d) {
 
-        g2d.drawImage(ball.getImage(), ball.getX(), ball.getY(),
-                ball.getImageWidth(), ball.getImageHeight(), this);
-        g2d.drawImage(paddle.getImage(), paddle.getX(), paddle.getY(),
-                paddle.getImageWidth(), paddle.getImageHeight(), this);
-
-        for (int i = 0; i < bricks.length; i++) {
-
-            if (!bricks[i].isDestroyed()) {
-
-                g2d.drawImage(bricks[i].getImage(), bricks[i].getX(),
-                        bricks[i].getY(), bricks[i].getImageWidth(),
-                        bricks[i].getImageHeight(), this);
-            }
-        }
+        // Stage 2 - Flyweight: each sprite draws the shared picture at its own x, y.
+        // Stage 2 - Composite: one call draws the whole wall.
+        ball.draw(g2d, this);
+        paddle.draw(g2d, this);
+        wall.draw(g2d, this);
     }
 
     private void gameFinished(Graphics2D g2d) {
@@ -162,18 +149,11 @@ public class Board extends JPanel {
             stopGame();
         }
 
-        for (int i = 0, j = 0; i < bricks.length; i++) {
+        // Stage 2 - Composite: the wall asks all its rows and bricks.
+        if (wall.isDestroyed()) {
 
-            if (bricks[i].isDestroyed()) {
-
-                j++;
-            }
-
-            if (j == bricks.length) {
-
-                message = "Victory";
-                stopGame();
-            }
+            message = "Victory";
+            stopGame();
         }
 
         if ((ball.getRect()).intersects(paddle.getRect())) {
@@ -217,49 +197,7 @@ public class Board extends JPanel {
             }
         }
 
-        // A brick counts a hit only when the ball first touches it, so a
-        // StrongBrick loses one hit per collision (not one hit per frame).
-        Set<Brick> nowTouching = new HashSet<>();
-
-        for (int i = 0; i < bricks.length; i++) {
-
-            if ((ball.getRect()).intersects(bricks[i].getRect())) {
-
-                nowTouching.add(bricks[i]);
-
-                int ballLeft = (int) ball.getRect().getMinX();
-                int ballHeight = (int) ball.getRect().getHeight();
-                int ballWidth = (int) ball.getRect().getWidth();
-                int ballTop = (int) ball.getRect().getMinY();
-
-                var pointRight = new Point(ballLeft + ballWidth + 1, ballTop);
-                var pointLeft = new Point(ballLeft - 1, ballTop);
-                var pointTop = new Point(ballLeft, ballTop - 1);
-                var pointBottom = new Point(ballLeft, ballTop + ballHeight + 1);
-
-                if (!bricks[i].isDestroyed() && !touchedBricks.contains(bricks[i])) {
-
-                    if (bricks[i].getRect().contains(pointRight)) {
-
-                        ball.setXDir(-1);
-                    } else if (bricks[i].getRect().contains(pointLeft)) {
-
-                        ball.setXDir(1);
-                    }
-
-                    if (bricks[i].getRect().contains(pointTop)) {
-
-                        ball.setYDir(1);
-                    } else if (bricks[i].getRect().contains(pointBottom)) {
-
-                        ball.setYDir(-1);
-                    }
-
-                    bricks[i].hit();
-                }
-            }
-        }
-
-        touchedBricks = nowTouching;
+        // Stage 2 - Composite: one call checks the ball against every brick.
+        wall.checkCollision(ball);
     }
 }

@@ -1,6 +1,7 @@
 package com.zetcode;
 
-import javax.swing.ImageIcon;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 public class Ball extends Sprite {
 
@@ -17,15 +18,8 @@ public class Ball extends Sprite {
         xdir = 1;
         ydir = -1;
 
-        loadImage();
-        getImageDimensions();
+        loadImage("src/resources/ball.png");
         resetState();
-    }
-
-    private void loadImage() {
-
-        var ii = new ImageIcon("src/resources/ball.png");
-        image = ii.getImage();
     }
 
     void move() {
@@ -38,9 +32,9 @@ public class Ball extends Sprite {
             setXDir(1);
         }
 
-        if (x == Commons.WIDTH - imageWidth) {
+        if (x == Commons.WIDTH - getImageWidth()) {
 
-            System.out.println(imageWidth);
+            System.out.println(getImageWidth());
             setXDir(-1);
         }
 
@@ -69,5 +63,38 @@ public class Ball extends Sprite {
     int getYDir() {
 
         return ydir;
+    }
+
+    /**
+     * Stage 2 (moved from Board.checkCollision): changes the direction of the
+     * ball when it hits the given rectangle, depending on the side it touched.
+     */
+    void bounceOff(Rectangle target) {
+
+        int ballLeft = (int) getRect().getMinX();
+        int ballHeight = (int) getRect().getHeight();
+        int ballWidth = (int) getRect().getWidth();
+        int ballTop = (int) getRect().getMinY();
+
+        var pointRight = new Point(ballLeft + ballWidth + 1, ballTop);
+        var pointLeft = new Point(ballLeft - 1, ballTop);
+        var pointTop = new Point(ballLeft, ballTop - 1);
+        var pointBottom = new Point(ballLeft, ballTop + ballHeight + 1);
+
+        if (target.contains(pointRight)) {
+
+            setXDir(-1);
+        } else if (target.contains(pointLeft)) {
+
+            setXDir(1);
+        }
+
+        if (target.contains(pointTop)) {
+
+            setYDir(1);
+        } else if (target.contains(pointBottom)) {
+
+            setYDir(-1);
+        }
     }
 }

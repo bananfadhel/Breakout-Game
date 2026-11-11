@@ -24,22 +24,25 @@ public class ClassicLevelBuilder implements LevelBuilder {
     @Override
     public void buildBricks() {
 
-        Brick[] bricks = new Brick[Commons.N_OF_BRICKS];
-
-        int k = 0;
+        // Stage 2 - Composite: the wall is a group of rows, and each row is a
+        // group of bricks (wall -> rows -> bricks).
+        BrickGroup wall = new BrickGroup();
 
         for (int i = 0; i < 5; i++) {
 
             char type = (i == 0) ? 'S' : 'N';   // top row: strong bricks
 
+            BrickGroup row = new BrickGroup();
+
             for (int j = 0; j < 6; j++) {
 
-                bricks[k] = brickFactory.createBrick(type, j * 40 + 30, i * 10 + 50);
-                k++;
+                row.add(brickFactory.createBrick(type, j * 40 + 30, i * 10 + 50));
             }
+
+            wall.add(row);
         }
 
-        level.setBricks(bricks);
+        level.setWall(wall);
     }
 
     @Override

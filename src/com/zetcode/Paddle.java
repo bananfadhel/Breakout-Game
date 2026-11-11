@@ -1,7 +1,6 @@
 package com.zetcode;
 
 import java.awt.event.KeyEvent;
-import javax.swing.ImageIcon;
 
 public class Paddle extends Sprite  {
 
@@ -14,18 +13,11 @@ public class Paddle extends Sprite  {
     
     private void initPaddle() {
 
-        loadImage();
-        getImageDimensions();
+        loadImage("src/resources/paddle.png");
 
         resetState();
     }
     
-    private void loadImage() {
-        
-        var ii = new ImageIcon("src/resources/paddle.png");
-        image = ii.getImage();        
-    }    
-
     void move() {
 
         x += dx;
@@ -35,9 +27,9 @@ public class Paddle extends Sprite  {
             x = 0;
         }
 
-        if (x >= Commons.WIDTH - imageWidth) {
+        if (x >= Commons.WIDTH - getImageWidth()) {
 
-            x = Commons.WIDTH - imageWidth;
+            x = Commons.WIDTH - getImageWidth();
         }
     }
 
