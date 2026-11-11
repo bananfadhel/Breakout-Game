@@ -22,7 +22,8 @@ public class Board extends JPanel {
     private Ball ball;
     private Paddle paddle;
     private BrickComponent wall;   // Stage 2 - Composite: the whole wall is one component
-    private boolean inGame = true;
+    private boolean inGame = false;
+    private boolean inMenu = true;     // the game starts on the level menu
 
     public Board() {
 
@@ -35,26 +36,26 @@ public class Board extends JPanel {
         setFocusable(true);
         setPreferredSize(new Dimension(Commons.WIDTH, Commons.HEIGHT));
 
-        gameInit();
+        // the game now starts on the menu; gameInit() runs when the player picks a level
     }
 
-    private void gameInit() {
+    // the player picked a level in the menu, so we start the game with that builder
+    private void gameInit(LevelBuilder builder) {
 
         ball = new Ball();
         paddle = new Paddle();
 
         // Stage 1 - Builder: the level is built by LevelEngineer (director)
-        // using a LevelBuilder, like RobotEngineer and RobotBuilder in the lecture.
-        // Stage 1 - Factory Method: the builder receives the BrickFactory
-        // (concrete creator) to use for every brick.
-        // To play the hard level, change this line to:
-        //     new HardLevelBuilder(new ClassicBrickFactory());
-        LevelBuilder builder = new ClassicLevelBuilder(new ClassicBrickFactory());
+        // using the LevelBuilder the player chose in the menu.
         LevelEngineer engineer = new LevelEngineer(builder);
         engineer.makeLevel();
         Level level = engineer.getLevel();
 
         wall = level.getWall();
+
+        message = "Game Over";
+        inMenu = false;
+        inGame = true;
 
         timer = new Timer(level.getSpeed(), new GameCycle());
         timer.start();
@@ -72,7 +73,10 @@ public class Board extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
 
-        if (inGame) {
+        if (inMenu) {
+
+            drawMenu(g2d);
+        } else if (inGame) {
 
             drawObjects(g2d);
         } else {
@@ -92,16 +96,30 @@ public class Board extends JPanel {
         wall.draw(g2d, this);
     }
 
-    private void gameFinished(Graphics2D g2d) {
-
-        var font = new Font("Verdana", Font.BOLD, 18);
-        FontMetrics fontMetrics = this.getFontMetrics(font);
+    // the start screen where the player picks the level
+    private void drawMenu(Graphics2D g2d) {
 
         g2d.setColor(Color.BLACK);
+        drawCentered(g2d, "BREAKOUT", new Font("Verdana", Font.BOLD, 26), 130);
+        drawCentered(g2d, "Choose a level", new Font("Verdana", Font.PLAIN, 14), 185);
+        drawCentered(g2d, "1  -  Classic", new Font("Verdana", Font.BOLD, 16), 225);
+        drawCentered(g2d, "2  -  Hard", new Font("Verdana", Font.BOLD, 16), 255);
+    }
+
+    private void gameFinished(Graphics2D g2d) {
+
+        g2d.setColor(Color.BLACK);
+        drawCentered(g2d, message, new Font("Verdana", Font.BOLD, 18), Commons.WIDTH / 2);
+        drawCentered(g2d, "Press ENTER for the menu", new Font("Verdana", Font.PLAIN, 12),
+                Commons.WIDTH / 2 + 35);
+    }
+
+    // writes a line of text in the middle of the screen
+    private void drawCentered(Graphics2D g2d, String text, Font font, int y) {
+
+        FontMetrics fontMetrics = this.getFontMetrics(font);
         g2d.setFont(font);
-        g2d.drawString(message,
-                (Commons.WIDTH - fontMetrics.stringWidth(message)) / 2,
-                Commons.WIDTH / 2);
+        g2d.drawString(text, (Commons.WIDTH - fontMetrics.stringWidth(text)) / 2, y);
     }
 
     private class TAdapter extends KeyAdapter {
@@ -109,13 +127,36 @@ public class Board extends JPanel {
         @Override
         public void keyReleased(KeyEvent e) {
 
-            paddle.keyReleased(e);
+            if (inGame) {
+
+                paddle.keyReleased(e);
+            }
         }
 
         @Override
         public void keyPressed(KeyEvent e) {
 
-            paddle.keyPressed(e);
+            int key = e.getKeyCode();
+
+            if (inMenu) {
+
+                // menu: 1 = classic level, 2 = hard level (the client picks the builder)
+                if (key == KeyEvent.VK_1 || key == KeyEvent.VK_NUMPAD1) {
+
+                    gameInit(new ClassicLevelBuilder(new ClassicBrickFactory()));
+                } else if (key == KeyEvent.VK_2 || key == KeyEvent.VK_NUMPAD2) {
+
+                    gameInit(new HardLevelBuilder(new ClassicBrickFactory()));
+                }
+            } else if (inGame) {
+
+                paddle.keyPressed(e);
+            } else if (key == KeyEvent.VK_ENTER) {
+
+                // game over or victory: back to the menu
+                inMenu = true;
+                repaint();
+            }
         }
     }
 

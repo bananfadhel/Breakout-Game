@@ -50,14 +50,7 @@ Now we followed the Robot example from the lecture:
 
 The two patterns work together: each builder gets a `BrickFactory` and uses it to create the bricks.
 
-To try the hard level, change this line in `Board.gameInit()`:
-```java
-new ClassicLevelBuilder(new ClassicBrickFactory())
-```
-to:
-```java
-new HardLevelBuilder(new ClassicBrickFactory())
-```
+When the game starts, a menu lets the player pick the level: press **1** for Classic or **2** for Hard. Board then passes the chosen builder to `LevelEngineer`. After Game Over or Victory, press **Enter** to go back to the menu.
 
 ## How to run
 Run these from the project folder:
@@ -65,4 +58,4 @@ Run these from the project folder:
 javac -d out src/com/zetcode/*.java
 java -cp out com.zetcode.Breakout
 ```
-Use the left and right arrow keys to move the paddle.
+Pick a level with **1** or **2**, then use the left and right arrow keys to move the paddle.
