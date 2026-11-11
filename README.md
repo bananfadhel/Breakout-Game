@@ -27,7 +27,7 @@ Now the wall is a tree: `BrickGroup` (wall) → `BrickGroup` (rows) → `Brick` 
 `wall.draw(...)`, `wall.checkCollision(ball)` and `wall.isDestroyed()`. The level builders now build rows of bricks and put them in the wall.
 
 ### Flyweight (shared pictures)
-Before, every `Sprite` created its own `ImageIcon` and kept its own copy of the picture data, so the 30 bricks made 30 separate load requests for only two different files, and nothing in our design shared them.
+Before, every `Sprite` created its own `ImageIcon` and kept its own image, width and height fields, so the 30 bricks made 30 separate load requests for only two different files, and nothing in our design shared them.
 Now `SpriteImageFactory` loads each picture once and shares it as a `SpriteImage` (intrinsic state: image and size).
 Each sprite keeps only its own position (extrinsic state) and passes it to `SpriteImage.draw(g, x, y, observer)`.
 
