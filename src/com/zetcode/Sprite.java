@@ -61,11 +61,6 @@ public class Sprite {
         return spriteImage.getHeight();
     }
 
-    Image getImage() {
-
-        return spriteImage.getImage();
-    }
-
     Rectangle getRect() {
 
         return new Rectangle(x, y, getImageWidth(), getImageHeight());
