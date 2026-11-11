@@ -4,27 +4,23 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.ImageObserver;
 
-/**
- * Base class of every game object.
- *
- * Refactoring (Stage 2 - Flyweight): a Sprite no longer owns a copy of its
- * picture. It keeps a reference to a shared SpriteImage (intrinsic state)
- * obtained from SpriteImageFactory, and keeps only its own position x, y
- * (extrinsic state).
- */
+// base class of every game object
+// Flyweight: a Sprite now keeps a shared SpriteImage and only its own x, y
 public class Sprite {
 
+    // only the position belongs to each sprite
     int x;
     int y;
+    // the shared picture from SpriteImageFactory
     private SpriteImage spriteImage;
 
-    /** Gets the picture from the factory (loaded once, then shared). */
+    // get the picture from the factory (loaded once, then shared)
     protected void loadImage(String path) {
 
         spriteImage = SpriteImageFactory.getSpriteImage(path);
     }
 
-    /** Draws the shared picture at this sprite's own position. */
+    // draw the shared picture at this sprite's own x, y
     public void draw(Graphics2D g2d, ImageObserver observer) {
 
         spriteImage.draw(g2d, x, y, observer);

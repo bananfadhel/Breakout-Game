@@ -65,10 +65,8 @@ public class Ball extends Sprite {
         return ydir;
     }
 
-    /**
-     * Stage 2 (moved from Board.checkCollision): changes the direction of the
-     * ball when it hits the given rectangle, depending on the side it touched.
-     */
+    // bounce the ball off a brick, depending on which side it touched
+    // (moved here from Board.checkCollision)
     void bounceOff(Rectangle target) {
 
         int ballLeft = (int) getRect().getMinX();

@@ -1,17 +1,13 @@
 package com.zetcode;
 
-/**
- * Stage 1 - Factory Method (Concrete Creator).
- *
- * Creates the bricks used by the classic game. Adding a new brick type
- * only needs a new Brick subclass and one new case here; Board does not
- * change.
- */
+// Factory Method - Concrete Creator: decides which brick class to create
+// a new brick type only needs a new Brick subclass and a new case here
 public class ClassicBrickFactory extends BrickFactory {
 
     @Override
     public Brick createBrick(char type, int x, int y) {
 
+        // 'N' = normal brick, 'S' = strong brick
         switch (type) {
 
             case 'N':

@@ -5,19 +5,14 @@ import java.awt.image.ImageObserver;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Stage 2 - Composite (Composite).
- *
- * A group of BrickComponents: a row of bricks, or the whole wall (a group of
- * rows). Its children can be single bricks or other groups. Each operation is
- * forwarded to all the children, so the tree is handled with one call.
- * add / remove / getChild exist only here (the "safe" Composite): a single
- * Brick does not need them.
- */
+// Composite - Composite: a group of bricks, like one row or the whole wall
+// every call is passed to all the children, so the whole wall is handled with one call
 public class BrickGroup implements BrickComponent {
 
+    // the children can be single bricks or other groups
     private final List<BrickComponent> children = new ArrayList<>();
 
+    // add / remove / getChild are only here, a single brick does not need them
     public void add(BrickComponent component) {
         children.add(component);
     }
@@ -30,6 +25,7 @@ public class BrickGroup implements BrickComponent {
         return children.get(i);
     }
 
+    // draw all the children
     @Override
     public void draw(Graphics2D g2d, ImageObserver observer) {
 
@@ -38,7 +34,7 @@ public class BrickGroup implements BrickComponent {
         }
     }
 
-    /** The group is destroyed when every child is destroyed. */
+    // the group is destroyed only when all its children are destroyed
     @Override
     public boolean isDestroyed() {
 
@@ -52,6 +48,7 @@ public class BrickGroup implements BrickComponent {
         return true;
     }
 
+    // check the ball against all the children
     @Override
     public void checkCollision(Ball ball) {
 

@@ -1,15 +1,11 @@
 package com.zetcode;
 
-/**
- * Stage 1 - Factory Method (Concrete Product).
- *
- * A strong brick needs two hits. After the first hit it shows a cracked
- * picture so the player can see it has been damaged.
- */
+// Factory Method - Concrete Product: a strong brick that needs two hits
 public class StrongBrick extends Brick {
 
     public StrongBrick(int x, int y) {
 
+        // a strong brick starts with 2 hits
         super(x, y, 2);
     }
 
@@ -24,6 +20,7 @@ public class StrongBrick extends Brick {
 
         super.hit();
 
+        // after the first hit, show the cracked picture
         if (hitsLeft == 1) {
 
             loadImage("src/resources/brick_strong_cracked.png");

@@ -3,23 +3,15 @@ package com.zetcode;
 import java.awt.Graphics2D;
 import java.awt.image.ImageObserver;
 
-/**
- * A normal brick: disappears after one hit.
- *
- * Stage 1 (Factory Method): Brick is the base "Product" type created by a
- * BrickFactory; it keeps the number of hits left so subclasses such as
- * StrongBrick can need more than one hit.
- *
- * Stage 2 (Composite): Brick is the Leaf. It implements BrickComponent and
- * now draws itself and checks its own collision with the ball (this logic was
- * in Board before).
- * Stage 2 (Flyweight): the picture comes from SpriteImageFactory (shared).
- */
+// Factory Method - Product: a normal brick, it breaks after one hit
+// Composite - Leaf: a single brick, it draws itself and checks its own collision
+// Flyweight: its picture comes from SpriteImageFactory (shared)
 public class Brick extends Sprite implements BrickComponent {
 
+    // how many hits the brick still needs
     protected int hitsLeft;
 
-    /** true while the ball overlaps this brick, so one contact counts only one hit. */
+    // true while the ball is touching this brick, so one touch counts as one hit
     private boolean touchingBall = false;
 
     public Brick(int x, int y) {
@@ -27,6 +19,7 @@ public class Brick extends Sprite implements BrickComponent {
         this(x, y, 1);
     }
 
+    // subclasses use this to start with more hits
     protected Brick(int x, int y, int hits) {
 
         this.x = x;
@@ -36,19 +29,20 @@ public class Brick extends Sprite implements BrickComponent {
         loadImage(getImagePath());
     }
 
-    /** Subclasses override this to use a different picture. */
+    // subclasses override this to use another picture
     protected String getImagePath() {
 
         return "src/resources/brick.png";
     }
 
+    // the brick is destroyed when it has no hits left
     @Override
     public boolean isDestroyed() {
 
         return hitsLeft <= 0;
     }
 
-    /** Called when the ball hits this brick. */
+    // the ball hit the brick, so it loses one hit
     void hit() {
 
         if (hitsLeft > 0) {
@@ -57,6 +51,7 @@ public class Brick extends Sprite implements BrickComponent {
         }
     }
 
+    // a destroyed brick is not drawn
     @Override
     public void draw(Graphics2D g2d, ImageObserver observer) {
 
@@ -66,10 +61,7 @@ public class Brick extends Sprite implements BrickComponent {
         }
     }
 
-    /**
-     * A brick counts a hit only when the ball first touches it, so a
-     * StrongBrick loses one hit per collision (not one hit per frame).
-     */
+    // count a hit only when the ball first touches the brick, not every frame
     @Override
     public void checkCollision(Ball ball) {
 

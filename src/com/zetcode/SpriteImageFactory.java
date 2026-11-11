@@ -5,24 +5,20 @@ import java.awt.Image;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Stage 2 - Flyweight (Flyweight Factory).
- *
- * Creates and shares SpriteImage objects. getSpriteImage(path) returns the
- * existing SpriteImage when the picture was already loaded, and loads it from
- * disk only the first time. (Swing code runs on one thread, so a plain
- * HashMap is enough, like ShapeFactory in the lecture.)
- */
+// Flyweight - Factory: loads each picture once and shares it (like ShapeFactory in the lecture)
 public class SpriteImageFactory {
 
+    // each picture is loaded once and saved here by its path
     private static final Map<String, SpriteImage> images = new HashMap<>();
 
     private SpriteImageFactory() { }
 
+    // give back the saved picture, or load it the first time it is asked for
     public static SpriteImage getSpriteImage(String path) {
 
         SpriteImage spriteImage = images.get(path);
 
+        // not loaded yet: load it from disk and save it in the map
         if (spriteImage == null) {
 
             Image image = new ImageIcon(path).getImage();
@@ -35,7 +31,7 @@ public class SpriteImageFactory {
         return spriteImage;
     }
 
-    /** Number of different pictures loaded so far. */
+    // how many different pictures were loaded so far
     public static int getImageCount() {
 
         return images.size();

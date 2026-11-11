@@ -140,7 +140,7 @@ public class Board extends JPanel {
 
             if (inMenu) {
 
-                // menu: 1 = classic level, 2 = hard level (the client picks the builder)
+                // the player chooses the level: 1 = classic builder, 2 = hard builder
                 if (key == KeyEvent.VK_1 || key == KeyEvent.VK_NUMPAD1) {
 
                     gameInit(new ClassicLevelBuilder(new ClassicBrickFactory()));
@@ -153,7 +153,7 @@ public class Board extends JPanel {
                 paddle.keyPressed(e);
             } else if (key == KeyEvent.VK_ENTER) {
 
-                // game over or victory: back to the menu
+                // after game over or victory, Enter goes back to the menu
                 inMenu = true;
                 repaint();
             }
@@ -190,7 +190,7 @@ public class Board extends JPanel {
             stopGame();
         }
 
-        // Stage 2 - Composite: the wall asks all its rows and bricks.
+        // Stage 2 - Composite: one call asks all the rows and bricks if they are destroyed.
         if (wall.isDestroyed()) {
 
             message = "Victory";

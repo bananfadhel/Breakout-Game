@@ -4,14 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 
-/**
- * Stage 2 - Flyweight (Flyweight).
- *
- * A picture that is loaded once and shared by many sprites. It keeps only
- * the INTRINSIC state (the image and its size), which never changes and is
- * the same for every sprite that uses it. The EXTRINSIC state (x, y) belongs
- * to the sprite and is passed in when the picture is drawn.
- */
+// Flyweight - Flyweight: a picture that is loaded once and shared by many sprites
+// it keeps only the image and its size (shared), the x, y come from the sprite
 public class SpriteImage {
 
     private final Image image;
@@ -25,7 +19,7 @@ public class SpriteImage {
         this.height = image.getHeight(null);
     }
 
-    /** Draws the shared picture at the position given by the sprite (extrinsic state). */
+    // draw the shared picture at the x, y given by the sprite
     public void draw(Graphics2D g2d, int x, int y, ImageObserver observer) {
 
         g2d.drawImage(image, x, y, width, height, observer);

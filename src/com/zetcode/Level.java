@@ -1,12 +1,7 @@
 package com.zetcode;
 
-/**
- * Stage 1 - Builder (Product).
- *
- * A level of the game: its wall of bricks and its speed (timer period).
- * Stage 2 (Composite): the wall is one BrickComponent (a tree of groups of bricks).
- * It is built step by step by a LevelBuilder.
- */
+// Builder - Product: one level of the game, with its wall of bricks and its speed
+// the wall is one BrickComponent (Composite)
 public class Level {
 
     private BrickComponent wall;
